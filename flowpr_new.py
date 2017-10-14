@@ -23,7 +23,7 @@ from pox.lib.packet.ipv4 import ipv4
 from pox.lib.packet.arp import arp
 from pox.lib.addresses import IPAddr, EthAddr
 from pox.lib.util import str_to_bool, dpidToStr
-
+from test_generation import *
 
 generated_matrix = []
 generated_matrix_new = True
@@ -504,10 +504,11 @@ class packet_flow(object):
  		'nw_proto' : None
  		}
 		self.in_port = None
-		self.nodes_up = []
+		self.nodes_up = set()
 		self.flow_graph = self.matrix_assign(matrix = flow_root.flow_graph) #将总体的矩阵复制过来
 		self.flow_from_packet(packet = packet)
 		self.may_overlap_nodes = set() 
+
 		self.actions_set = [] #总体继承动作排序
 		self.phenotype_a = None #显性动作,即下发动作
 
@@ -747,146 +748,147 @@ class packet_flow(object):
 								nodes_up_sign == False
 								break
 						if nodes_up_sign == True:
-							self.nodes_up.append(f)
+							self.nodes_up.add(f)
 		if len(self.nodes_up) == 0:
-			self.nodes_up.append(flow_root)
+			self.nodes_up.add(flow_root)
 
 		# for x in range(1,len(match_data)+1):
 		# 	pass
 
 	def calc_max_granule_flow(self):
-		# rest_none = set()
-		# for f in nodes_up:
-		# 	for f1 in f.may_overlap_nodes:
-		# 		if f1 not in self.may_overlap_nodes:
-		# 			self.may_overlap_nodes.add(f1)
-		# for f in self.may_overlap_nodes:
-		# 	for m in match_data:
-		# 		if f.match_data[m] != None:
-		# 			rest_none.add(m)
-		# for m in match_data:
-		# 	if m not in rest_none:
-		# 		self.match_data[m] = Nonecore.openflow.addListenerByName("PacketIn", _handle_PacketIn)
+		pass
+		# # rest_none = set()
+		# # for f in nodes_up:
+		# # 	for f1 in f.may_overlap_nodes:
+		# # 		if f1 not in self.may_overlap_nodes:
+		# # 			self.may_overlap_nodes.add(f1)
+		# # for f in self.may_overlap_nodes:
+		# # 	for m in match_data:
+		# # 		if f.match_data[m] != None:
+		# # 			rest_none.add(m)
+		# # for m in match_data:
+		# # 	if m not in rest_none:
+		# # 		self.match_data[m] = Nonecore.openflow.addListenerByName("PacketIn", _handle_PacketIn)
 
 
-		match_data_amend = {
- 		'dl_src' : None,
- 		'dl_dst' : None,
- 		'dl_vlan' : None,
- 		'dl_vlan_pcp' : None,
- 		'dl_type' : None,
- 		'nw_tos' : None,
- 		'nw_src' : self.match_data['nw_src'],
- 		'nw_dst' : self.match_data['nw_dst'],
- 		'tp_src' : None,
- 		'tp_dst' : None,
- 		}
- 		if (len(self.nodes_up) == 1) and (self.nodes_up[0] is flow_root):#find the max granule when the node up is root.
- 			for f in flow_root.nodes_down:
- 				intersection = True
- 				for m in match_data_addr:
- 					if f.match_data[m] != None:
- 						if match_data_amend[m] != None:
- 							if match_data_amend[m] != f.match_data[m].addr:
- 								intersection = False
- 								break
- 				if intersection == False:
- 					continue
- 				else:
- 					for m in match_data_ord:
- 						if f.match_data[m] != None:
- 							if match_data_amend[m] != None:
- 								if match_data_amend[m] != f.match_data[m]:
- 									intersection = False
- 									break
- 				if intersection == True:
- 					break_sign = False
- 					for m in match_data_addr:
- 						if match_data_amend[m] == None:
- 							if f.match_data[m] != None:
- 								if self.match_data[m] != f.match_data[m].addr:
- 									break_sign = True
- 									match_data_amend[m] = self.match_data[m]
- 									break
- 					if break_sign == True:
- 						continue
- 					else:
- 						if match_data_amend[m] == None:
- 							if f.match_data[m] != None:
- 								if self.match_data[m] != f.match_data[m]:
- 									break_sign = True
- 									match_data_amend[m] = self.match_data[m]
- 				for m in match_data:
- 					self.match_data[m] = match_data_amend[m]
- 		else:#when the node up is others
- 			related_nodes = set()
- 			for f in flow_root.nodes_down:
- 				related_nodes.add(f)
- 			for f in self.nodes_up:#remove the related flow in root nodes down
- 				for f1 in f.related_flow:
- 					if f1 in related_nodes:
- 						related_nodes.remove(f1)
- 			for f in self.nodes_up:#
- 				for m in match_data:
- 					if match_data_amend[m] == None:
- 						if f.match_data[m] != None:
- 							match_data_amend[m] = self.match_data[m]
+		# match_data_amend = {
+ 	# 	'dl_src' : None,
+ 	# 	'dl_dst' : None,
+ 	# 	'dl_vlan' : None,
+ 	# 	'dl_vlan_pcp' : None,
+ 	# 	'dl_type' : None,
+ 	# 	'nw_tos' : None,
+ 	# 	'nw_src' : self.match_data['nw_src'],
+ 	# 	'nw_dst' : self.match_data['nw_dst'],
+ 	# 	'tp_src' : None,
+ 	# 	'tp_dst' : None,
+ 	# 	}
+ 	# 	if (len(self.nodes_up) == 1) and (self.nodes_up[0] is flow_root):#find the max granule when the node up is root.
+ 	# 		for f in flow_root.nodes_down:
+ 	# 			intersection = True
+ 	# 			for m in match_data_addr:
+ 	# 				if f.match_data[m] != None:
+ 	# 					if match_data_amend[m] != None:
+ 	# 						if match_data_amend[m] != f.match_data[m].addr:
+ 	# 							intersection = False
+ 	# 							break
+ 	# 			if intersection == False:
+ 	# 				continue
+ 	# 			else:
+ 	# 				for m in match_data_ord:
+ 	# 					if f.match_data[m] != None:
+ 	# 						if match_data_amend[m] != None:
+ 	# 							if match_data_amend[m] != f.match_data[m]:
+ 	# 								intersection = False
+ 	# 								break
+ 	# 			if intersection == True:
+ 	# 				break_sign = False
+ 	# 				for m in match_data_addr:
+ 	# 					if match_data_amend[m] == None:
+ 	# 						if f.match_data[m] != None:
+ 	# 							if self.match_data[m] != f.match_data[m].addr:
+ 	# 								break_sign = True
+ 	# 								match_data_amend[m] = self.match_data[m]
+ 	# 								break
+ 	# 				if break_sign == True:
+ 	# 					continue
+ 	# 				else:
+ 	# 					if match_data_amend[m] == None:
+ 	# 						if f.match_data[m] != None:
+ 	# 							if self.match_data[m] != f.match_data[m]:
+ 	# 								break_sign = True
+ 	# 								match_data_amend[m] = self.match_data[m]
+ 	# 			for m in match_data:
+ 	# 				self.match_data[m] = match_data_amend[m]
+ 	# 	else:#when the node up is others
+ 	# 		related_nodes = set()
+ 	# 		for f in flow_root.nodes_down:
+ 	# 			related_nodes.add(f)
+ 	# 		for f in self.nodes_up:#remove the related flow in root nodes down
+ 	# 			for f1 in f.related_flow:
+ 	# 				if f1 in related_nodes:
+ 	# 					related_nodes.remove(f1)
+ 	# 		for f in self.nodes_up:#
+ 	# 			for m in match_data:
+ 	# 				if match_data_amend[m] == None:
+ 	# 					if f.match_data[m] != None:
+ 	# 						match_data_amend[m] = self.match_data[m]
 
- 			for f in related_nodes:#find the max granule
- 				intersection = True
- 				for m in match_data_addr:
- 					if f.match_data[m] != None:
- 						if match_data_amend[m] != None:
- 							if match_data_amend[m] != f.match_data[m].addr:
- 								intersection = False
- 								break
- 				if intersection == False:
- 					continue
- 				else:
- 					for m in match_data_ord:
- 						if f.match_data[m] != None:
- 							if match_data_amend[m] != None:
- 								if match_data_amend[m] != f.match_data[m]:
- 									intersection = False
- 									break
- 				if intersection == True:
- 					break_sign = False
- 					for m in match_data_addr:
- 						if match_data_amend[m] == None:
- 							if f.match_data[m] != None:
- 								if self.match_data[m] != f.match_data[m].addr:
- 									break_sign = True
- 									match_data_amend[m] = self.match_data[m]
- 									break
- 					if break_sign == True:
- 						continue
- 					else:
- 						if match_data_amend[m] == None:
- 							if f.match_data[m] != None:
- 								if self.match_data[m] != f.match_data[m]:
- 									break_sign = True
- 									match_data_amend[m] = self.match_data[m]
- 			for m in match_data:
- 				self.match_data[m] = match_data_amend[m]
+ 	# 		for f in related_nodes:#find the max granule
+ 	# 			intersection = True
+ 	# 			for m in match_data_addr:
+ 	# 				if f.match_data[m] != None:
+ 	# 					if match_data_amend[m] != None:
+ 	# 						if match_data_amend[m] != f.match_data[m].addr:
+ 	# 							intersection = False
+ 	# 							break
+ 	# 			if intersection == False:
+ 	# 				continue
+ 	# 			else:
+ 	# 				for m in match_data_ord:
+ 	# 					if f.match_data[m] != None:
+ 	# 						if match_data_amend[m] != None:
+ 	# 							if match_data_amend[m] != f.match_data[m]:
+ 	# 								intersection = False
+ 	# 								break
+ 	# 			if intersection == True:
+ 	# 				break_sign = False
+ 	# 				for m in match_data_addr:
+ 	# 					if match_data_amend[m] == None:
+ 	# 						if f.match_data[m] != None:
+ 	# 							if self.match_data[m] != f.match_data[m].addr:
+ 	# 								break_sign = True
+ 	# 								match_data_amend[m] = self.match_data[m]
+ 	# 								break
+ 	# 				if break_sign == True:
+ 	# 					continue
+ 	# 				else:
+ 	# 					if match_data_amend[m] == None:
+ 	# 						if f.match_data[m] != None:
+ 	# 							if self.match_data[m] != f.match_data[m]:
+ 	# 								break_sign = True
+ 	# 								match_data_amend[m] = self.match_data[m]
+ 	# 		for m in match_data:
+ 	# 			self.match_data[m] = match_data_amend[m]
 
 
 
- 		# match_data_count = {
- 		# 'dl_src' : 0,
- 		# 'dl_dst' : 0,
- 		# 'dl_vlan' : 0,
- 		# 'dl_vlan_pcp' : 0,
- 		# 'dl_type' : 0,
- 		# 'nw_tos' : 0,
- 		# 'nw_src' : 0,
- 		# 'nw_dst' : 0,
- 		# 'tp_src' : 0,
- 		# 'tp_dst' : 0,
- 		# }
- 		# if (len(self.nodes_up) == 1) and (self.nodes_up[0] is flow_root):
- 		# 	for x in xrange(1,10):
- 		# 		for f in flow_root.nodes_down:
- 		# 			for m in match_data:
+ 	# 	# match_data_count = {
+ 	# 	# 'dl_src' : 0,
+ 	# 	# 'dl_dst' : 0,
+ 	# 	# 'dl_vlan' : 0,
+ 	# 	# 'dl_vlan_pcp' : 0,
+ 	# 	# 'dl_type' : 0,
+ 	# 	# 'nw_tos' : 0,
+ 	# 	# 'nw_src' : 0,
+ 	# 	# 'nw_dst' : 0,
+ 	# 	# 'tp_src' : 0,
+ 	# 	# 'tp_dst' : 0,
+ 	# 	# }
+ 	# 	# if (len(self.nodes_up) == 1) and (self.nodes_up[0] is flow_root):
+ 	# 	# 	for x in xrange(1,10):
+ 	# 	# 		for f in flow_root.nodes_down:
+ 	# 	# 			for m in match_data:
 
 
 
@@ -950,8 +952,8 @@ class packet_flow(object):
 class Tree_node_entry(object):
 	"""docstring for Tree_node_entry"""
 	def __init__(self):
-		self.nodes_down = []
-		self.nodes_up = []
+		self.nodes_down = set()
+		self.nodes_up = set()
 
 
 
@@ -981,35 +983,43 @@ class flow (object):
 		# self.flow_graph = []
 		# self.actions_graph = []
 		# self.may_overlap_nodes = set()
-		self.nodes_down_upsign = False
+		# self.nodes_down_upsign = False
 		self.end_leaf_sign = True
-		traversed_sign = False
+		# traversed_sign = False
 		self.nodes_down = set()
-		self.nodes_up = []
+		self.nodes_up = set()
 		self.inter_nodes_up = set()
 		self.inter_nodes_down = set()
 		self.actions = []
 		self.intersection = set()
+		self.coverd = set()
+		self.intersection_test = set()
 		if actions != None:
 			for ac in actions:
 				self.actions.append(ac)
 
 		self.level = 0
-		self.related_flow = set()
+		for x in match_data:
+			if self.match_data[x] != None:
+				self.level = self.level + 1
+
+		
+		# self.related_flow = set()
 		self.active_action = []
 
 		# mark = self.location_find()
+		startTimeStamp=time.time()
+		
 		mark = self.location_find_1()
+		endTimeStamp=time.time()
+		print " location_find_1:", (endTimeStamp-startTimeStamp)*1000, 'ms'
+		print " self.intersection:",len(self.intersection)
+		print "self.coverd",len(self.coverd)
+		
+		# self.find_intersection_from_nodeup()
+		
 
-		# self.calc_flow_graph()
-		self.calc_actions()
-		# print "start"
-		# print self
-		# print self.nodes_up
-		# if mark == 0:
-		# 	self.calc_flow_graph()
-		# self.end_leaf_sign = False
-
+		# self.calc_actions()
 
 	def matrix_assign(self, matrix):
 		GMN = len(switchlist)
@@ -1024,160 +1034,105 @@ class flow (object):
 				matrix_tmp[j][i] = matrix[j][i]
 		return matrix_tmp
 
-
-	def location_find_1(self):
-		
+	def location_find_1(self):		
 		self.nodes_down = set()
-		self.related_flow = set()
+		self.coverd = set()
 		lvl = len(match_data)
-		i = 0
-		for x in match_data:
-			if self.match_data[x] != None:
-				i = i + 1
-		self.level = i
-		self.nodes_up = []
+		self.nodes_up = set()		
 		temp = set()
 		i = 1
+		# if len(lvl_element[self.level]) == 0:
+		# 	lvl_element[self.level].append(self)
+		# else: # if there is same
+		# 	# print "This is the debug breakpoint!!!"
+		# 	for f in lvl_element[self.level]:
+		# 		comp_sign = self.flow_comp(f)
+		# 		if comp_sign == 0:
+		# 			for ac in self.actions:
+		# 				f.actions.append(ac)
+		# 			return 0
+		# 	lvl_element[self.level].append(self)		
 
-		if len(lvl_element[self.level]) == 0:
-			lvl_element[self.level].append(self)
-		else: # if there is same
-			for f in lvl_element[self.level]:
-				comp_sign = self.flow_comp(f)
-
-				if comp_sign == 0:
-					for ac in self.actions:
-						f.actions.append(ac)
-						return 0
-			lvl_element[self.level].append(self)
 		for f in flow_root.nodes_down:
-			temp.add(f)
-
-		
+			temp.add(f)		
 		while 1: #find the coverd
-			if i >= self.level: 				
+			if i == self.level: 
+				for f in temp:
+					if f.level == i:
+						comp_sign = self.flow_comp(f)
+						if comp_sign == 0:
+							print "This is the debug breakpoint!!!"
+							for ac in self.actions:
+								f.actions.append(ac)
+							return 0
+				lvl_element[self.level].append(self)									
 				break
+			elif i > self.level: 				
+				break
+
 			if len(temp) == 0 :
 				break
 			tempc = set()
 			remove_temp = set()
 			for f in temp:
-
 				if f.level == i:										
 					remove_temp.add(f)									
 					comp_sign = self.flow_comp(f,1)
 					if comp_sign == 1:
-						self.nodes_up.append(f)
-						for f1 in f.nodes_down:
-							if f1 not in tempc:							
-								tempc.add(f1)
-						for f1 in f.nodes_up:
-							if f1 in self.nodes_up:
-								self.nodes_up.remove(f1)		
-
+						self.nodes_up.add(f)
+						self.coverd.add(f)
+						tempc = tempc | f.nodes_down
+						self.nodes_up = self.nodes_up - f.nodes_up
 			i = i + 1
-			for f in remove_temp:
-				temp.remove(f)
+			temp = temp - remove_temp
 			for f in tempc:
 				if f not in temp:
 					temp.add(f)
-			
-			
 
-			
-
-		print "start"
-		print self
-		print self.nodes_up
 		temp = set()
 		i = 100
-
 		if len(self.nodes_up) == 0:
-			remove_temp = set()  			
+			remove_temp = set()  
 			for f in flow_root.nodes_down:
-			# 	temp.add(f)
-			# for f in temp:
 				comp_sign = self.flow_comp(f, 4)
 				if comp_sign == 2:
 					remove_temp.add(f)
 					f.nodes_up.remove(flow_root)
 					self.nodes_down.add(f)
-					f.nodes_up.append(self)			
+					f.nodes_up.add(self)			
 					self.end_leaf_sign = False
-		# 			# self.nodes_down_upsign = True
+					# self.nodes_down_upsign = True
 				elif comp_sign == 3:
-					for f1 in f.nodes_down:			
-						temp.add(f)
-						if f.level < i:
-							i = f.level					 
-			# for f in remove_temp:
-			# 	temp.remove(f)
-			# for f in tempc:
-			# 	temp.append(f)
-			# 	if f.level < i:
-			# 		i = f.level
-			self.nodes_up.append(flow_root)
+					self.intersection.add(f)
+					f.intersection.add(self)	
+					for f1 in f.nodes_down:				
+						temp.add(f1)
+						if f1.level < i:
+							i = f1.level					 
+			self.nodes_up.add(flow_root)
 			flow_root.nodes_down.add(self)
-			for f in remove_temp:
-				flow_root.nodes_down.remove(f)
-
-
+			flow_root.nodes_down = flow_root.nodes_down - remove_temp
 		else:
 			remove_temp = set()
 			for f in self.nodes_up:
 				for f1 in f.nodes_down:
 					comp_sign = self.flow_comp(f1, 4)
-					# print "comp_sign:", comp_sign
 					if comp_sign == 2:
 						self.nodes_down.add(f1)
 						f1.nodes_up.remove(f)
-						f1.nodes_up.append(self)
+						f1.nodes_up.add(self)
 						remove_temp.add(f1)
 						self.end_leaf_sign = False
-						# self.nodes_down_upsign = True
 					elif comp_sign == 3:
-						for f1 in f.nodes_down:			
-							temp.add(f)
-							if f.level < i:
-								i = f.level
-
-				for f1 in  remove_temp:
-					f.nodes_down.remove(f1)
+						self.intersection.add(f1)
+						f1.intersection.add(self)
+						for f2 in f1.nodes_down:			
+							temp.add(f2)							
+							if f2.level < i:
+								i = f2.level
+				f.nodes_down = f.nodes_down - remove_temp		
 			for f in self.nodes_up:
 				f.nodes_down.add(self)
-
-
-
-			# for f in self.nodes_up:
-			# 	for f1 in f.nodes_down:
-			# 		temp.add(f1)
-			# 		# if f1.level < i:
-			# 		# 	i = f1.level
-			# for f in temp:
-			# 	remove_temp.add(f)
-			# 	comp_sign = self.flow_comp(f, 4)
-			# 	if comp_sign == 2:
-			# 		self.nodes_down.add(f1)
-			# 		f1.nodes_up.remove(f)
-			# 		f1.nodes_up.append(self)
-			# 		remove_temp.append(f1)
-			# 		self.end_leaf_sign = False
-			# 		# self.nodes_down_upsign = True
-
-			# 	elif comp_sign == 3:
-			# 		for f1 in f.nodes_down:						
-			# 			tempc.add(f1)
-
-			# for f in remove_temp:
-			# 	temp.remove(f)
-			# for f in tempc:
-			# 	temp.append(f)
-			# 	if f.level < i:
-			# 		i = f.level
-			# for f in self.nodes_up:
-			# 	f.nodes_down.add(self)
-
-
 
 		while 1:
 			if len(temp) == 0 :
@@ -1190,8 +1145,9 @@ class flow (object):
 						remove_temp.add(f)
 						comp_sign = self.flow_comp(f, 3)
 						if comp_sign == 3:
-							for f1 in f.nodes_down:						
-								tempc.add(f1)			
+							self.intersection.add(f)
+							f.intersection.add(self)
+							tempc = tempc | f.nodes_down
 			elif i > self.level:
 				for f in temp:
 					if f.level == i:										
@@ -1199,97 +1155,124 @@ class flow (object):
 						comp_sign = self.flow_comp(f, 4)
 						if comp_sign == 2:
 							self.nodes_down.add(f)
-							f1.nodes_up.append(self)
+							f1.nodes_up.add(self)
 							self.end_leaf_sign = False
 							# self.nodes_down_upsign = True
 						elif comp_sign == 3:
-							for f1 in f.nodes_down:						
-								tempc.add(f1)
-			for f in remove_temp:
-				temp.remove(f)
-			for f in tempc:
-				temp.add(f)
+							self.intersection.add(f)
+							f.intersection.add(self)
+							tempc = tempc | f.nodes_down
+
+			temp = temp - remove_temp
+			temp = temp | tempc
+
 			i = i + 1
 
+		parentsin_cup = set()
+		for f in self.nodes_up:
+			parentsin_cup = parentsin_cup | f.intersection
+		parentsin_cup = parentsin_cup - self.intersection
+		parentsin_cup = parentsin_cup - self.coverd
+		parentsin_cup.discard(self)
+		for f in parentsin_cup:
+			sign = self.flow_comp(f, sign = 3 )
+			if sign == 3:
+				self.intersection.add(f)
+				f.intersection.add(self)
 
-
-
-
-			
-
-
-		# if len(self.nodes_up) == 0:   #find the covering when self up is root
-		# 	self.nodes_up.append(flow_root)
-		# 	flow_root.nodes_down.add(self)
-		# 	comp_set = set()
-		# 	add_temp = set()
+		# if len(self.nodes_up) == 0:
+		# 	remove_temp = set()  			
 		# 	for f in flow_root.nodes_down:
-		# 		if f.level > self.level:
-		# 			comp_set.add(f)
-
-		# 	for f in comp_set:
-		# 		comp_sign = self.flow_comp(f, 2)
+		# 	# 	temp.add(f)
+		# 	# for f in temp:
+		# 		comp_sign = self.flow_comp(f, 4)
 		# 		if comp_sign == 2:
-		# 			add_temp.add(f)
-		# 			f.nodes_up.append(self)
-		# 			flow_root.nodes_down.remove(f)
+		# 			remove_temp.add(f)
 		# 			f.nodes_up.remove(flow_root)
+		# 			self.nodes_down.add(f)
+		# 			f.nodes_up.add(self)			
 		# 			self.end_leaf_sign = False
-		# 			# self.nodes_down_upsign = True
-		# 			pass
-		# 	comp_set = set()
-		# 	for x in xrange(1,self.level + 1):
+		# # 			# self.nodes_down_upsign = True
+		# 		elif comp_sign == 3:
+		# 			for f1 in f.nodes_down:			
+		# 				temp.add(f)
+		# 				if f.level < i:
+		# 					i = f.level					 
+		# 	# for f in remove_temp:
+		# 	# 	temp.remove(f)
+		# 	# for f in tempc:
+		# 	# 	temp.append(f)
+		# 	# 	if f.level < i:
+		# 	# 		i = f.level
+		# 	self.nodes_up.add(flow_root)
+		# 	flow_root.nodes_down.add(self)
+		# 	for f in remove_temp:
+		# 		flow_root.nodes_down.remove(f)
 
-		# 		for f in lvl_element[x]:
-		# 			for f1 in f.nodes_down:
-		# 				print "f1.level == ", f1.level
-		# 				if f1.level > self.level:
-		# 					comp_set.add(f1)
 
-
-		# 	for f in comp_set:
-		# 		comp_sign = self.flow_comp(f, 2)
-		# 		if comp_sign == 2:
-		# 			add_temp.add(f)
-		# 			f.nodes_up.append(self)
-		# 			self.end_leaf_sign = False
-		# 			# self.nodes_down_upsign = True
-		# 	for f in add_temp:
-		# 		self.nodes_down.add(f)
-
-		# else:  #find the covering when self up is not root
-		# 	print "not root"
-		
-
+		# else:
+		# 	remove_temp = set()
 		# 	for f in self.nodes_up:
-		# 		remove_temp = []
 		# 		for f1 in f.nodes_down:
-		# 			comp_sign = self.flow_comp(f1, 2)
-		# 			# print "comp_sign:", comp_sign
+		# 			comp_sign = self.flow_comp(f1, 4)
 		# 			if comp_sign == 2:
 		# 				self.nodes_down.add(f1)
 		# 				f1.nodes_up.remove(f)
-		# 				f1.nodes_up.append(self)
-		# 				remove_temp.append(f1)
+		# 				f1.nodes_up.add(self)
+		# 				remove_temp.add(f1)
 		# 				self.end_leaf_sign = False
-		# 				# self.nodes_down_upsign = True
+		# 			elif comp_sign == 3:
+		# 				for f1 in f.nodes_down:			
+		# 					temp.add(f)
+		# 					if f.level < i:
+		# 						i = f.level
+
 		# 		for f1 in  remove_temp:
 		# 			f.nodes_down.remove(f1)
 		# 	for f in self.nodes_up:
 		# 		f.nodes_down.add(self)
 
-
-
-		# print self.nodes_up
-
-			
+		# while 1:
+		# 	if len(temp) == 0 :
+		# 		break
+		# 	tempc = set()
+		# 	remove_temp = set()
+		# 	if i <= self.level:
+		# 		for f in temp:
+		# 			if f.level == i:										
+		# 				remove_temp.add(f)
+		# 				comp_sign = self.flow_comp(f, 3)
+		# 				if comp_sign == 3:
+		# 					for f1 in f.nodes_down:						
+		# 						tempc.add(f1)			
+		# 	elif i > self.level:
+		# 		for f in temp:
+		# 			if f.level == i:										
+		# 				remove_temp.add(f)
+		# 				comp_sign = self.flow_comp(f, 4)
+		# 				if comp_sign == 2:
+		# 					self.nodes_down.add(f)
+		# 					f1.nodes_up.add(self)
+		# 					self.end_leaf_sign = False
+		# 					# self.nodes_down_upsign = True
+		# 				elif comp_sign == 3:
+		# 					for f1 in f.nodes_down:						
+		# 						tempc.add(f1)
+		# 	for f in remove_temp:
+		# 		temp.remove(f)
+		# 	for f in tempc:
+		# 		temp.add(f)
+		# 	i = i + 1
 
 	def flow_comp(self, f, sign = 0 ):
-		# same: 0 sign = 0 
-		# self < f: 1 sign = 1 
-		# self > f: 2 sign = 2
-		# intersection: 3 sign = 3
-		# other: False
+		"""-----------------------------------------------------------------
+		sign = 1 self < f: 1 
+		sign = 2 self > f: 2 
+		intersection: 3 sign = 3
+		sign = 4 intersection & self > f: self > f  2 ;intersection  3 
+		sign = 5 intersection & self > f: self < f  1 ;intersection: 3
+		other: 9 
+		----------------------------------------------------------------"""
 		if sign == 0:
 			issame = True
 			for m in match_data_addr:
@@ -1319,7 +1302,7 @@ class flow (object):
 			if issame == True:
 				return 0
 			else:
-				return False
+				return 9
 		elif sign == 1:
 
 			contain = True
@@ -1343,36 +1326,9 @@ class flow (object):
 			if contain == True:
 				return 1
 			else:
-				return False
+				return 9
 
 		elif sign == 2:
-			# issame = True
-			# for m in match_data_addr:
-			# 	if f.match_data[m] == None:
-			# 		if self.match_data[m] == None:
-			# 			continue
-			# 		else:
-			# 			issame = False
-			# 			break
-
-			# 	elif self.match_data[m] != None:
-			# 		if f.match_data[m].addr == self.match_data[m].addr:
-			# 			continue
-			# 		else:
-			# 			issame = False
-			# 			break
-
-			# 	else:
-			# 		issame = False
-			# 		break
-			# if issame == True:
-			# 	for m in match_data_ord:
-			# 		if f.match_data[m] != self.match_data[m]:
-			# 			issame = False
-			# 			break
-
-			# if issame == True:
-			# 	return 0
 			contain = True
 			for m in match_data_addr:
 				if self.match_data[m] == None:
@@ -1394,7 +1350,7 @@ class flow (object):
 			if contain == True:
 				return 2
 			else:
-				return False
+				return 9
 		elif sign == 3:
 			intersection = True
 			for m in match_data_addr:
@@ -1403,7 +1359,7 @@ class flow (object):
 				elif f.match_data[m] == None:
 					continue
 				elif self.match_data[m].addr != f.match_data[m].addr:
-					contain = False
+					intersection = False
 					break
 			if intersection == True:				
 				for m in match_data_ord:
@@ -1417,7 +1373,7 @@ class flow (object):
 			if intersection == True:
 				return 3
 			else:
-				return False
+				return 9
 		elif sign == 4:
 			intersection = True
 			contain = True
@@ -1446,7 +1402,7 @@ class flow (object):
 			elif intersection == True:
 				return 3
 			else:
-				return False
+				return 9
 		elif sign == 5:
 			intersection = True
 			contain = True
@@ -1475,10 +1431,7 @@ class flow (object):
 			elif intersection == True:
 				return 3
 			else:
-				return False
-
-
-
+				return 9
 
 	def location_find(self):
 		self.nodes_down = set()
@@ -1664,6 +1617,7 @@ class flow (object):
 		# 	f.calc_flow_graph()
 		# print self.flow_graph
 		pass
+
 	def calc_actions_flowdown_change(self, alg = "EVERY"):
 		
 		if self.nodes_down_upsign == True:
@@ -1679,7 +1633,6 @@ class flow (object):
 				for f in flow_temp:
 					f.calc_actions()
 				self.nodes_down_upsign == False
-
 
 	def calc_actions(self):
 		action_temp = []
@@ -1762,10 +1715,6 @@ class flow (object):
 			# 	elif action.action_name == "Path_choose":
 			# 		continue						
 
-
-
-
-
 	def flow_delete(self):
 		global end_leaf_nodes
 		for fl in self.nodes_up:
@@ -1829,10 +1778,221 @@ class flow (object):
 					f.related_flow.remove[self]
 					f.calc_flow_graph()
 
+	def find_intersection_from_nodeup(self):
+		self.intersection = set()
+		temp = set()
+		parentsin_cup = set()
+		parentsch_cap = set()
+		i = 1
+
+		# startTimeStamp=time.time()
+		
+		
+		for f in self.nodes_up:
+			if i == 1:
+				# for f1 in f.nodes_down:
+				# 	parentsch_cap.add(f1)
+				parentsch_cap = set(s for s in f.nodes_down)
+			else:
+				parentsch_cap = parentsch_cap & f.nodes_down
+			i = i + 1
+
+		
+
+		
+		for f in self.nodes_down:
+			for f1 in f.intersection:
+				self.intersection.add(f)
+
+		for f in self.nodes_up:
+			parentsin_cup = parentsin_cup | f.intersection
+		parentsin_cup = parentsin_cup - self.intersection
+		parentsin_cup = parentsin_cup - self.coverd
+		# endTimeStamp=time.time()
+		# print " intersection_from_nodeup part1:", (endTimeStamp-startTimeStamp)*1000, 'ms'
+
+		print len(parentsin_cup)
+
+		startTimeStamp=time.time()
+		for f in parentsin_cup:
+			sign = self.flow_comp(f, sign = 3 )
+			if sign == 3:
+				self.intersection.add(f)
+				f.intersection.add(self)
+		# endTimeStamp=time.time()
+		# print " intersection_from_nodeup part2:", (endTimeStamp-startTimeStamp)*1000, 'ms'
+
+		# startTimeStamp=time.time()
+		if len(parentsch_cap) > 1:
+
+			parentsch_cap.remove(self)
+			for f in parentsch_cap:
+				temp.add(f)
+			i = 1
+			while 1: #find the intersection
+				if len(temp) == 0:
+					break
+				tempc = set()
+				remove_temp = set()
+
+				for f in temp:
+					if f.level == i:										
+						remove_temp.add(f)
+
+						comp_sign = self.flow_comp(f,3)
+						if comp_sign == 3:
+							self.intersection.add(f)
+							f.intersection.add(self)
+							for f1 in f.nodes_down:
+								if f1 not in tempc:							
+									tempc.add(f1)
+							# for f1 in f.nodes_up:
+							# 	if f1 in self.nodes_up:
+							# 		self.nodes_up.remove(f1)		
+
+				i = i + 1
+				for f in remove_temp:
+					temp.remove(f)
+				for f in tempc:
+					if f not in temp:
+						temp.add(f)
+		# endTimeStamp=time.time()
+		# print " intersection_from_nodeup part3:", (endTimeStamp-startTimeStamp)*1000, 'ms'
+		return self.intersection
+		
+	def find_intersection(self):
+		temp = set()
+		for f in flow_root.nodes_down:
+			temp.add(f)
+		intersection_set = set()
+		# self.nodes_up = []
+		# temp = set()
+		
+		i = 1
+		while 1: #find the intersection
+			if len(temp) == 0:
+				break
+
+			tempc = set()
+			remove_temp = set()
+
+			for f in temp:
+				if f.level == i:										
+					remove_temp.add(f)
+
+					comp_sign = self.flow_comp(f,3)
+					if comp_sign == 3:
+						intersection_set.add(f)
+						for f1 in f.nodes_down:
+							if f1 not in tempc:							
+								tempc.add(f1)
+						# for f1 in f.nodes_up:
+						# 	if f1 in self.nodes_up:
+						# 		self.nodes_up.remove(f1)		
+
+			i = i + 1
+			for f in remove_temp:
+				temp.remove(f)
+			for f in tempc:
+				if f not in temp:
+					temp.add(f)
+			for x in intersection_set:
+				self.intersection.add(x)
+				pass
+		return intersection_set
+
+	def flow_comp_for_nomal(self, f, sign = 0 ):
+		if sign == 0:
+			intersection = True
+			for m in match_data_addr:
+				if self.match_data[m] == None:
+					continue
+				elif f.match_data[m] == None:
+					continue
+				elif self.match_data[m].addr != f.match_data[m].addr:
+					intersection = False
+					continue
+			if intersection == True:				
+				for m in match_data_ord:
+					if self.match_data[m] != f.match_data[m]:
+						if self.match_data[m] != None:
+							if f.match_data[m] != None:
+								intersection = False
+								continue
+						else:
+							continue
+			if intersection == True:
+				return 3
+			else:
+				return 9
+	
+	def find_intersection_nomal(self):
+		intersection_set = set()
+		flowset_all = set()		
+		intersection = set()		
+		coverd = set()
+		covering = set()
+		flowset_all1 = set()
+		intersection1 = set()
+		coverd1 = set()
+		covering1 = set()	
+		# for i in xrange(1,len(match_data) + 1):
+		# 	for f in lvl_element[i]:
+		# 		pass	
+		for i in xrange(1, len(match_data) + 1):
+			# print len(lvl_element[i])
+			for f in lvl_element[i]:
+				flowset_all.add(f)
+
+
+		for f in flow_root.nodes_down:
+			flowset_all1.add(f)
+
+		for f in flowset_all:
+			comp_sign = self.flow_comp(f,1)
+			# comp_sign2 = self.flow_comp(f,2)
+			# comp_sign1 = self.flow_comp(f,1)
+			# comp_sign3 = self.flow_comp(f,3)
+			comp_sign3 = self.flow_comp_for_nomal(f)
+			if comp_sign != 1:
+				# if comp_sign1 == 1:
+				# 	coverd.add(f)
+				# elif comp_sign2 == 2:
+				# 	covering.add(f)
+				# elif comp_sign3 == 3:
+				# 	intersection.add(f)
+				if comp_sign3 == 3:
+					self.intersection_test.add(f)
+					f.intersection_test.add(self)
+				# 	intersection.add(f)
+		# intersection2 = set()
+		# for f in flowset_all1:
+		# 	comp_sign = self.flow_comp(f,4)
+		# 	if comp_sign == 3:
+		# 		intersection2.add(f)
+
+		# for f in flowset_all1:
+		# 	comp_sign2 = self.flow_comp(f,2)
+		# 	comp_sign1 = self.flow_comp(f,1)
+		# 	comp_sign3 = self.flow_comp(f,3)		
+		# 	if comp_sign1 == 1:
+		# 		coverd1.add(f)
+		# 	elif comp_sign2 == 2:
+		# 		covering1.add(f)
+		# 	elif comp_sign3 == 3:
+		# 		intersection1.add(f)	
+		# print "same",len(coverd1&self.coverd)
+		# print "covering",len(covering),"coverd",len(coverd),"self",len(self.coverd)
+		# print "covering1",len(covering1),"coverd1",len(coverd1)
+		# print "intersection",len(intersection),"intersection1",len(intersection1),"intersection2",len(intersection2)
+		# print "intersection",len(self.intersection_test),len(self.intersection)
+
+		return self.intersection_test
+
 	def find_intersection_conflict(self):
-		save_temp = []
+		save_temp = set()
 		save_temp = save_temp | flow_root.nodes_down
-		conflict_set = []
+		conflict_set = set()
 		for i in xrange(1,len(match_data) + 1):
 			compare_temp = []
 			for f in save_temp:
@@ -1893,7 +2053,7 @@ class flow (object):
 									state = 3
 									continue
 								else:
-									f.conflict_set.append(f)
+									f.conflict_set.add(f)
 									break								
 							elif action.action_name == "Flow_forbidden":
 								allow_set = action.allow_set & self.phenotype_a.allow_set
@@ -1914,7 +2074,7 @@ class flow (object):
 										conflict_sign = True
 										break
 								if conflict_sign == True:
-									f.conflict_set.append(f)
+									f.conflict_set.add(f)
 									break
 						elif state == 2:
 							if action.action_name == "Flow_modify":
@@ -1922,7 +2082,7 @@ class flow (object):
 									state = 3
 									continue 
 								else:
-									f.conflict_set.append(f)
+									f.conflict_set.add(f)
 									break	
 
 							elif action.action_name == "Flow_forbidden":
@@ -1938,7 +2098,7 @@ class flow (object):
 										conflict_sign = True
 										break
 								if conflict_sign == True:
-									f.conflict_set.append(f)
+									f.conflict_set.add(f)
 									break
 
 							elif action.action_name == "Path_choose":
@@ -1950,14 +2110,8 @@ class flow (object):
 								else:
 									conflict_sign = True
 								if conflict_sign == True:
-									f.conflict_set.append(f)
+									f.conflict_set.add(f)
 									break
-
-
-
-
-
-
 					if f.end_leaf_sign == False:
 						save_temp = save_temp | f.nodes_down
 					# if f.end_leaf_sign == False:
@@ -1969,95 +2123,11 @@ class flow (object):
 				break
 		return conflict_set
 
-
-
-					
-			
-
-	# def attach_to_path(self, path):
-	# 	path_len = len(path)
-	# 	for s in switchlist:
-	# 		if s in path:
-	# 			if path.index(s) != path_len - 1:
-	# 				for s2 in switchlist:
-	# 					if s2 == path[path.index(s)+1]:
-	# 						pass
-	# 					else:
-	# 						self.actions_graph[switchlist.index(s)][switchlist.index(s2)] = 60000
-	# 			else:
-	# 				for s2 in switchlist:
-	# 					self.actions_graph[switchlist.index(s)][switchlist.index(s2)] = 60000
-	# 		else:
-	# 			for s2 in switchlist:
-	# 				self.actions_graph[switchlist.index(s)][switchlist.index(s2)] = 60000
-
-	# 	pass
-	# def flow_forbidden(self, allow_set):
-	# 	for s1 in switchlist:
-	# 		for s2 in switchlist:
-	# 			if s2 not in allow_set:
-	# 				self.flow_graph[switchlist.index(s1)][switchlist.index(s2)] = 60000
-	# 			if s1 not in allow_set:
-	# 				self.flow_graph[switchlist.index(s1)][switchlist.index(s2)] = 60000
-
-
-	# def update_graph_under(self):
-	# 	for x in range(self.level + 1,len(match_data) + 1): # update flow under this level
-	# 		for f in lvl_element[x]:
-	# 			if self in f.related_flow:
-	# 				# f.location_find()
-	# 				f.calc_flow_graph()
-
-
-
+	def attach_to_path(self, path):
+		pass
 
 	def D_path_find(self, s1, s2):
 		pass
-		# assert s1 is not s2
-		# if s1 in switchlist:
-		# 	if s2 in switchlist:
-		# 		GMN = len(switchlist)
-		# 		l_record = defaultdict(lambda:[])
-		# 		u_record = defaultdict(lambda:[])
-		# 		for s in switchlist:
-		# 			l_record[s] = 60000
-		# 			u_record[s] = s1
-		# 		l_record[s1] = 0
-		# 		S_record = []
-		# 		S_record.append(s1)
-		# 		i = 0
-		# 		u_tmp = s1
-		# 		while (i < GMN - 1):
-
-		# 			for v in switchlist:
-		# 				if v not in S_record:
-		# 					if (l_record[v] > (l_record[u_tmp] + self.flow_graph[switchlist.index(u_tmp)][switchlist.index(v)])):
-		# 						l_record[v] = l_record[u_tmp] + self.flow_graph[switchlist.index(u_tmp)][switchlist.index(v)]
-		# 						u_record[v] = u_tmp
-		# 			tmp = 60000
-		# 			for v in switchlist:
-		# 				if v not in S_record:
-		# 					if (l_record[v] < tmp):
-		# 						tmp = l_record[v]
-		# 						u_tmp = v
-		# 			if tmp == 60000:
-		# 				break
-		# 			S_record.append(u_tmp)
-		# 			i = i + 1
-		# 		if s2 not in u_record:
-		# 			path = False
-		# 		else:
-
-		# 			path = []
-		# 			path.append(s2)
-		# 			tmp = s2
-		# 			for i in xrange(0,GMN):
-		# 				tmp = u_record[tmp]
-		# 				if tmp is s1:
-		# 					path.append(s1)
-		# 					break
-		# 				path.append(tmp)
-		# 		return path
 
 
 
@@ -2184,12 +2254,13 @@ class Conflict_Find(object):
 
 
 		return inter_set
+
 	def Intersection_find_nomal(self):
-		inter_set = dict()
-		inter_set[flow_root] = set()
-		for i in xrange(1, len(match_data) + 1):
-			for f in lvl_element[i]:
-				inter_set[f] = set()
+		# inter_set = dict()
+		# inter_set[flow_root] = set()
+		# for i in xrange(1, len(match_data) + 1):
+		# 	for f in lvl_element[i]:
+		# 		inter_set[f] = set()
 
 		flowset_all = set()
 		temp = set()
@@ -2214,34 +2285,32 @@ class Conflict_Find(object):
 		# 	i = i + 1
 
 		for i in xrange(1, len(match_data) + 1):
+			# print len(lvl_element[i])
 			for f in lvl_element[i]:
 				flowset_all.add(f)
-		while 1:
-			# print flowset_all
-			if len(flowset_all) <= 1 :
-				break
-			for f in flowset_all:
-				Transient_Flow = f
-				flowset_all.remove(f)
-				break
-			for f in flowset_all:
-				comp_sign1 = Transient_Flow.flow_comp(f, 4)
-				comp_sign2 = Transient_Flow.flow_comp(f, 5)
-				if (comp_sign1 == 3) and (comp_sign2 == 3):
-					inter_set[Transient_Flow].add(f)
-					inter_set[f].add(Transient_Flow)
+		# print len(flowset_all)
+		# while 1:
+		# 	# print flowset_all
+		# 	if len(flowset_all) <= 1 :
+		# 		break
+		# 	for f in flowset_all:
+		# 		Transient_Flow = f
+		# 		flowset_all.remove(f)
+		# 		break
+		# 	for f in flowset_all:
+		# 		comp_sign1 = Transient_Flow.flow_comp(f, 4)
+		# 		comp_sign2 = Transient_Flow.flow_comp(f, 5)
+		# 		if (comp_sign1 == 3) and (comp_sign2 == 3):
+		# 			inter_set[Transient_Flow].add(f)
+		# 			inter_set[f].add(Transient_Flow)
+		for f in flowset_all:
+			comp_sign1 = Transient_Flow.flow_comp(f, 4)
+			comp_sign2 = Transient_Flow.flow_comp(f, 5)
+			if (comp_sign1 == 3) and (comp_sign2 == 3):
+				inter_set[Transient_Flow].add(f)
+				inter_set[f].add(Transient_Flow)		
 		# return inter_set
 
-
-
-			
-
-					
-
-
-		
-
-		
 
 class flow_generation(object):
 	"""docstring for ClassName"""
@@ -2251,17 +2320,23 @@ class flow_generation(object):
 			self.flow_name = []
 			self.num = NUM
 			for x in xrange(1, self.num + 1):
-				self.flow_name.append(False)
-
-				
-
+				self.flow_name.append(False)		
 			self.flow_rand_generation(NUM = self.num)
-		elif self.generation_name == "Fix_1_generation":
-			
+
+		elif self.generation_name == "Fix_1_generation":			
 			self.fix_1_generation()
+
 		elif self.generation_name == "Rand_generation_parameter":
 			self.num = NUM
-			self.lvl_build = self.flow_rand_generation_parameter(NUM = self.num)
+			self.lvl_build = self.lvl_element_init() 
+			self.flow_rand_generation_parameter(NUM = self.num)
+			self.flow_generation_lvlstruct()
+		elif self.generation_name == "Rand_generation_1_real":
+			pass
+		elif self.generation_name == "Halfhrand_generation":
+			self.num = NUM
+			self.flow_halfrand_generation(NUM = self.num)
+
 
 	def fix_1_generation(self):
 		ac = []
@@ -2296,21 +2371,6 @@ class flow_generation(object):
 					 tp_src = 8036)
 		flow7 = flow(nw_src = IPAddr('10.0.0.1'),
 					 tp_src = 8036)
-		print "graph"
-		print flow5
-		print flow5.nodes_up
-		print flow4
-		print flow4.nodes_up
-		print flow2
-		print flow2.nodes_up
-		print flow7
-		print flow7.nodes_up
-		print flow1
-		print flow1.nodes_up
-		print flow3
-		print flow3.nodes_up
-		print flow6
-		print flow6.nodes_up
 
 		
 
@@ -2320,9 +2380,301 @@ class flow_generation(object):
 		# ac.append(action_entry(action_name = "Flow_forbidden", allow_set = allow_set))
 		# flow1 = flow(nw_src = IPAddr('10.0.0.1'),
 		# 			 actions = ac, priority = 55)
+	
+	def flow_generation_lvlstruct(self):
+		n_sign = 1
+		for i in range(1,len(match_data)+1): 
+			for f in self.lvl_build[i]:
+				print n_sign
+				flow(dl_src = f.match_data['dl_src'], dl_dst = f.match_data['dl_dst'], dl_vlan = f.match_data['dl_vlan'],
+						dl_vlan_pcp = f.match_data['dl_vlan_pcp'], dl_type = None, nw_tos = f.match_data['nw_tos'], nw_proto = None,
+						nw_src = f.match_data['nw_src'], nw_dst = f.match_data['nw_dst'], tp_src = f.match_data['tp_src'], 
+						tp_dst = f.match_data['tp_dst'], actions = f.actions)
+				
+				n_sign = n_sign + 1
+		# for i in range(1,len(match_data)+1): 
+		# 	print len(lvl_element[i])
+
+	def flow_rand_generation_1(self):
+		p1 = random.randint(1, len(self.lvl_build) - 2)
+		p2 = random.randint(1, len(self.lvl_build[p1])) - 1
+		f_data = self.match_data_gene_1(lvl = p1 + 1, up_node = self.lvl_build[p1][p2])
+		print"the generation one"
+		startTimeStamp_1=time.time()
 		
+		f1 = flow(dl_src = f_data.match_data['dl_src'], dl_dst = f_data.match_data['dl_dst'], dl_vlan = f_data.match_data['dl_vlan'],
+						dl_vlan_pcp = f_data.match_data['dl_vlan_pcp'], dl_type = None, nw_tos = f_data.match_data['nw_tos'], nw_proto = None,
+						nw_src = f_data.match_data['nw_src'], nw_dst = f_data.match_data['nw_dst'], tp_src = f_data.match_data['tp_src'], 
+						tp_dst = f_data.match_data['tp_dst'], actions = f_data.actions)
+		endTimeStamp_1=time.time()
+		print "build time:"
+		print (endTimeStamp_1-startTimeStamp_1)*1000, 'ms'
+		return f1
+
+	def flow_halfrand_generation(self, NUM = None):
+		rules_NUM = NUM * 100             
+		# p_up = 0.75 # probability of relatation to the level(self.level - 1)
+		p_up = 0.75
+		lvl_1_NUM = int(rules_NUM * 0.15) #  /10 = int ; means the NUM of entire nodes in this level
+		lvl_2_NUM = int(rules_NUM * 0.35)
+		lvl_3_NUM = int(rules_NUM * 0.1)
+		lvl_4_NUM = int(rules_NUM * 0.1)
+		lvl_5_NUM = int(rules_NUM * 0.1)	
+		lvl_6_NUM = int(rules_NUM * 0.1)
+		lvl_7_NUM = int(rules_NUM * 0.05)
+		lvl_8_NUM = int(rules_NUM * 0.05)
+		lvl_NUM = [1, lvl_1_NUM, lvl_2_NUM, lvl_3_NUM, lvl_4_NUM, lvl_5_NUM, lvl_6_NUM, lvl_7_NUM, lvl_8_NUM]
+		used_MF_dict = {
+		'nw_src': 0,
+		'nw_dst': 0,
+		'dl_src': 0,
+		'dl_dst': 0,
+		'dl_vlan': 0,
+		'tp_src': 0,
+		'tp_dst': 0,
+		'nw_tos': 0,
+		'dl_vlan_pcp': 0
+		}
+		for x in xrange(1, 9):
+			lvl_NUM_temp = lvl_NUM[x]
+			for i in xrange(1, x + 1):
+				pass
 
 
+	def flow_rand_generation_parameter(self, NUM = None): # times 100, /100 = NUM, virtual for test
+		rules_NUM = NUM * 100             
+		# p_up = 0.75 # probability of relatation to the level(self.level - 1)
+		p_up = 0.9
+		lvl_1_NUM = int(rules_NUM * 0.1) #  /10 = int ; means the NUM of entire nodes in this level
+		lvl_2_NUM = int(rules_NUM * 0.3)
+		lvl_3_NUM = int(rules_NUM * 0.1)
+		lvl_4_NUM = int(rules_NUM * 0.1)
+		lvl_5_NUM = int(rules_NUM * 0.1)	
+		lvl_6_NUM = int(rules_NUM * 0.1)
+		lvl_7_NUM = int(rules_NUM * 0.1)
+		lvl_8_NUM = int(rules_NUM * 0.1)
+		lvl_NUM = [1, lvl_1_NUM, lvl_2_NUM, lvl_3_NUM, lvl_4_NUM, lvl_5_NUM, lvl_6_NUM, lvl_7_NUM, lvl_8_NUM]
+		for x in xrange(1, 9):
+			lvl_NUM_temp = lvl_NUM[x]
+			for i in xrange(1, x + 1):
+				
+				k = x + 1 - i
+				if k == 1:
+					for sign in xrange(0, lvl_NUM_temp):
+						self.lvl_build[x].append(self.match_data_gene_1(lvl = x))
+				else:
+					num_temp = int(p_up * lvl_NUM_temp)
+					lvl_NUM_temp = lvl_NUM_temp - num_temp
+					for sign in xrange(0, num_temp):
+						p1 = random.randint(0, lvl_NUM[x - 1] - 1)
+						self.lvl_build[x].append(self.match_data_gene_1(lvl = x, up_node = self.lvl_build[x - 1][p1]))
+
+	def match_data_gene_1(self, lvl = 1, up_node = "ROOT"): #generate one flow match data randomly based on the level and related up_node
+		f = primary_matchnode()
+		f.level = lvl
+		if up_node == "ROOT":
+			i = f.level
+			n = 9
+			for m in f.match_data:
+				if i >= 1:
+					p = random.randint(1, n)
+					n = n - 1
+					if p == 1:						
+						i = i - 1
+						f.match_data[m] = self.match_data_rand(m = m)
+
+		else:
+			i = f.level - up_node.level
+			n = 9 - up_node.level
+
+			for m in up_node.match_data:
+				if up_node.match_data[m] != None:
+					f.match_data[m] = up_node.match_data[m]
+				else:
+					if i >= 1:
+						p = random.randint(1, n)
+						n = n - 1
+						if p == 1:							
+							i = i - 1
+							f.match_data[m] = self.match_data_rand(m = m)
+		p = random.randint(1, 3)
+		if p == 1:
+			f.actions.append(self.action_rand(action_name = "Flow_forbidden"))
+		else:
+			f.actions.append(self.action_rand(action_name = "Flow_forbidden"))
+
+		return f
+		
+	def match_data_rand(self, m = None):
+		if m != None:
+
+			if m == 'nw_src':
+				p = random.randint(1, 240)
+				p_s = '%d'%p
+				str_s = ['10.0.0.', p_s]
+				tmp = ''.join(str_s)
+				match_data = IPAddr(tmp)
+
+			elif m == 'nw_dst':
+				p = random.randint(1, 240)
+				p_s = '%d'%p
+				str_s = ['10.0.0.', p_s]
+				tmp = ''.join(str_s)
+				match_data = IPAddr(tmp)
+
+			elif m == 'dl_src':
+				addr_t = []
+				for x in xrange(1,7):
+					int_N = random.randint(1, 255)
+					if int_N < 16:
+						add_0 = []
+						add_0.append('0')
+						add_0.append(hex(int_N)[2])
+						addr_t.append(''.join(add_0))
+					else:
+						addr_t.append(''.join(hex(int_N)[2: ]))
+				addr = '-'.join(addr_t)
+
+				match_data = EthAddr(addr)
+			elif m == 'dl_dst':
+				addr_t = []
+				for x in xrange(1,7):
+					int_N = random.randint(1, 255)
+					if int_N < 16:
+						add_0 = []
+						add_0.append('0')
+						add_0.append(hex(int_N)[2])
+						addr_t.append(''.join(add_0))
+					else:
+						addr_t.append(''.join(hex(int_N)[2: ]))
+				addr = '-'.join(addr_t)
+				match_data = EthAddr(addr)
+
+			elif m == 'dl_vlan':
+				match_data = random.randint(1, 500)
+			# elif m == 'dl_vlan_pcp':
+			# 	match_data_tmp[m] = None
+			elif m == 'tp_src':
+				match_data = random.randint(1, 2000)
+			elif m == 'tp_dst':
+				match_data = random.randint(1, 2000)
+			elif m == 'nw_tos':
+				match_data = random.randint(1, 500)
+			elif m == 'dl_vlan_pcp':
+				match_data = random.randint(1, 500)
+
+			return match_data 
+	
+	def match_data_byNum(self, m = None, Num = None):
+		if m != None:
+
+			if m == 'nw_src':
+				n1 = Num//255
+				n2 = Num%255
+				n_s1 = '%d'%n1
+				n_s2 = '%d'%n2
+				str_s = ['10.0.', n_s1, '.', n_s2]
+				tmp = ''.join(str_s)
+				match_data = IPAddr(tmp)
+
+			elif m == 'nw_dst':
+				n1 = Num//255
+				n2 = Num%255
+				n_s1 = '%d'%n1
+				n_s2 = '%d'%n2
+				str_s = ['10.0.', n_s1, '.', n_s2]
+				tmp = ''.join(str_s)
+				match_data = IPAddr(tmp)
+
+			elif m == 'dl_src':
+				addr_t = []
+				for x in xrange(1,5):
+					addr_t.append('00')
+				n1 = Num//255
+				n2 = Num%255
+				if n1 < 16:
+					add_0 = []
+					add_0.append('0')
+					add_0.append(hex(n1)[2])
+					addr_t.append(''.join(add_0))
+				else:
+					addr_t.append(''.join(hex(n1)[2: ]))
+				if n2 < 16:
+					add_0 = []
+					add_0.append('0')
+					add_0.append(hex(n2)[2])
+					addr_t.append(''.join(add_0))
+				else:
+					addr_t.append(''.join(hex(n2)[2: ]))
+
+				addr = '-'.join(addr_t)
+				match_data = EthAddr(addr)
+
+			elif m == 'dl_dst':
+				addr_t = []
+				for x in xrange(1,5):
+					addr_t.append('00')
+				n1 = Num//255
+				n2 = Num%255
+				if n1 < 16:
+					add_0 = []
+					add_0.append('0')
+					add_0.append(hex(n1)[2])
+					addr_t.append(''.join(add_0))
+				else:
+					addr_t.append(''.join(hex(n1)[2: ]))
+				if n2 < 16:
+					add_0 = []
+					add_0.append('0')
+					add_0.append(hex(n2)[2])
+					addr_t.append(''.join(add_0))
+				else:
+					addr_t.append(''.join(hex(n2)[2: ]))
+
+				addr = '-'.join(addr_t)
+				match_data = EthAddr(addr)
+
+			elif m == 'dl_vlan':
+				match_data = Num
+			# elif m == 'dl_vlan_pcp':
+			# 	match_data_tmp[m] = None
+			elif m == 'tp_src':
+				match_data = Num
+			elif m == 'tp_dst':
+				match_data = Num
+			elif m == 'nw_tos':
+				match_data = Num
+			elif m == 'dl_vlan_pcp':
+				match_data = Num
+
+			return match_data 
+
+	def action_rand(self, action_name = None):
+		if action_name == "Flow_forbidden":
+			p = random.randint(0, 100)
+			flow_allow_set = set()
+			for x in xrange(1,12):
+				if p < 30:
+					p1 = random.randint(1, 12)
+					if p1 not in flow_allow_set:
+						flow_allow_set.add(p1)
+			action = action_entry(action_name = "Flow_forbidden", allow_set = flow_allow_set)
+			return action
+		
+	def hex_d0x(self, int_N):
+		 if isinstance(int_N, int):
+		 	hex(int_N)[2: ]
+		 else:
+			pass	
+
+	def lvl_element_init(self):
+		lvl_element_temp = []
+		for i in range(0,len(match_data)+1):
+			tmp = []
+			lvl_element_temp .append(tmp)
+		lvl_element_temp[0].append('ROOT')
+		return lvl_element_temp
+	
 	def flow_rand_generation(self, NUM = None):
 		
 		print "runing"
@@ -2360,10 +2712,6 @@ class flow_generation(object):
 						tmp = ''.join(str_s)
 						match_data_tmp[m] = IPAddr(tmp)
 						root_sign = False
-					# elif m == 'dl_src':
-					# 	match_data_tmp[m] = None
-					# elif m == 'dl_dst':
-					# 	match_data_tmp[m] = None
 					elif m == 'dl_vlan':
 						match_data_tmp[m] = random.randint(1, 500)
 						root_sign = False
@@ -2383,153 +2731,13 @@ class flow_generation(object):
 			self.flow_name[x] = flow(nw_src = match_data_tmp['nw_src'], nw_dst = match_data_tmp['nw_dst'], dl_vlan = match_data_tmp['dl_vlan'], tp_src = match_data_tmp['tp_src'], 
 									tp_dst = match_data_tmp['tp_dst'])
 
-
-			# def __init__(self, dl_src = None, dl_dst = None, dl_vlan = None,
-			# 	   dl_vlan_pcp = None, dl_type = None, nw_tos = None, nw_proto = None,
-			# 	   nw_src = None, nw_dst = None, tp_src = None, tp_dst = None, actions = None):
-
-			# endTimeStamp = time.time()
-			# print (endTimeStamp - startTimeStamp)*1000
 			p = random.randint(0, 100)
 			if p < 70:
 				p1 = random.randint(1, 12)
 				flow_allow_set = set([1,2,3,4,5,6,7,8,9,10,11,12])
 				flow_allow_set.remove(p1)
-
-				# if p1 != 1:
-				# 	p2 = random.randint(1, p-1)
-				# 	flow_allow_set.remove(p2)
-				# else:
-				# 	p2 = random.randint(3, 12)
-				# 	flow_allow_set.remove(p2)
 				self.flow_name[x].actions.append(action_entry(action_name = "Flow_forbidden", allow_set = flow_allow_set))
-			# else:
-			# 	flow_path = []
-			# 	for x in xrange(1,5):
-			# 		p1 = random.randint(1, 12)
-			# 		flow_path.append(p1)
-			# 	flow_name[x].actions.append(entry_action_attach_to_path(path = flow_path))
-			# print x
-			# print flow_name[x].match_data
-
-	def flow_rand_generation_parameter(self, NUM = None): # times 100, /100 = NUM
-		rules_NUM = NUM * 100                      
-		lvl_build = self.lvl_element_init() 
-		lvl_1_NUM = rules_NUM * 0.1 #  /10 = int
-		lvl_2_NUM = rules_NUM * 0.3
-		lvl_3_NUM = rules_NUM * 0.1
-		lvl_4_NUM = rules_NUM * 0.1	
-		lvl_5_NUM = rules_NUM * 0.1	
-		lvl_6_NUM = rules_NUM * 0.1
-		lvl_7_NUM = rules_NUM * 0.1
-		lvl_8_NUM = rules_NUM * 0.1
-		lvl_NUM = [1, lvl_1_NUM, lvl_2_NUM, lvl_3_NUM, lvl_4_NUM, lvl_5_NUM, lvl_6_NUM, lvl_7_NUM, lvl_8_NUM]
-
-		for x in xrange(1, 9):
-			for i in xrange(1, x + 1):
-				lvl_NUM[x]
-				k = x + 1 - i
-				if k == 1:
-					for x in xrange(0, lvl_NUM[x]):
-						lvl_build[x].append(self.match_data_gene_1(lvl = x))
-				else:
-					num_temp = int(0.75 * lvl_NUM[x])
-					lvl_NUM[x] = lvl_NUM[x] - num_temp
-					for x in xrange(0, num_temp):
-						p1 = random.randint(1, lvl_NUM[k - 1])
-						lvl_build[x].append(self.match_data_gene_1(lvl = x, up_node = lvl_build[x - 1][p1]))
-		return lvl_build
-
-	def match_data_gene_1(self, lvl = 1, up_node = "ROOT"):
-		f = primary_matchnode()
-		f.level = lvl
-		if up_node == "ROOT":
-			i = f.level
-			n = 10
-			for m in up_node.match_data:
-				if i >= 1:
-					p = random.randint(1, n)
-					if p == 1:
-						n = n-1
-						i = i - 1
-						f.match_data[m] = self.match_data_rand(m = m)
-
-		else:
-			i = f.level - up_node.level
-			n = 10 - up_node.level
-
-			for m in up_node.match_data:
-				if m != None:
-					f.match_data[m] = up_nodes.match_data[m]
-				else:
-					if i >= 1:
-						p = random.randint(1, n)
-						if p == 1:
-							n = n-1
-							i = i - 1
-							f.match_data[m] = self.match_data_rand(m = m)
-		return f
-
-
-
-	def match_data_rand(self, m = None):
-		if m == 'nw_src':
-			p = random.randint(1, 240)
-			p_s = '%d'%p
-			str_s = ['10.0.0.', p_s]
-			tmp = ''.join(str_s)
-			match_data[m] = IPAddr(tmp)
-
-		elif m == 'nw_dst':
-			p = random.randint(1, 240)
-			p_s = '%d'%p
-			str_s = ['10.0.0.', p_s]
-			tmp = ''.join(str_s)
-			match_data[m] = IPAddr(tmp)
-
-		elif m == 'dl_src':
-			addr_t = []
-			for x in xrange(1,10):
-				p = random.randint(1, 255)
-				addr_t.append(''.join(hex(int_N)[2: ]))
-			addr = ''.join(addr_t)
-			match_data[m] = EthAddr(addr)
-		elif m == 'dl_dst':
-			addr_t = []
-			for x in xrange(1,10):
-				p = random.randint(1, 255)
-				addr_t.append(''.join(hex(int_N)[2: ]))
-			addr = ''.join(addr_t)
-			match_data[m] = EthAddr(addr)
-
-
-		elif m == 'dl_vlan':
-			match_data = random.randint(1, 500)
-		# elif m == 'dl_vlan_pcp':
-		# 	match_data_tmp[m] = None
-		elif m == 'tp_src':
-			match_data = random.randint(1, 2000)
-		elif m == 'tp_dst':
-			match_data = random.randint(1, 2000)
-		elif m == 'nw_tos':
-			match_data = random.randint(1, 500)
-		elif m == 'dl_vlan_pcp':
-			match_data = random.randint(1, 500)
-		return match_data 
-		
-	def hex_d0x(self, int_N):
-		 if isinstance(int_N, int):
-		 	hex(int_N)[2: ]
-		 else:
-			pass	
-
-	def lvl_element_init(self):
-		lvl_element_temp = []
-		for i in range(0,len(match_data)+1):
-			tmp = []
-			lvl_element.append(tmp)
-			lvl_element[0].append(flow_root)
-		return lvl_element_temp
+			
 
 class primary_matchnode(object):
 	"""docstring for ClassName"""
@@ -2539,7 +2747,7 @@ class primary_matchnode(object):
  		'dl_dst' : None,
  		'dl_vlan' : None,
  		'dl_vlan_pcp' : None,
- 		'dl_type' : None,
+ 		# 'dl_type' : None,
  		'nw_tos' : None,
  		'nw_src' : None,
  		'nw_dst' : None,
@@ -2550,9 +2758,7 @@ class primary_matchnode(object):
 		self.nodes_up = set()
 		self.actions = []
 		self.level = 0
-
-
-		
+	
 
 def launch():
 	#global _noflood_by_default, _hold_down
@@ -2563,66 +2769,73 @@ def launch():
 	# startTimeStamp=time.time()
 	# flow_generation(generation_name = "Fix_1_generation")
 
-	flow_generation(generation_name = "Rand_generation_parameter", NUM = 2500)
 
+
+
+
+
+	# ge = flow_generation(generation_name = "Halfhrand_generation", NUM = 1)
+	ge = flow_generation(generation_name = "Rand_generation_parameter", NUM = 10)
 	# flow_generation(generation_name = "Rand_generation", NUM = 2500)
+	
+	print "f1 is build"
+	f1 = ge.flow_rand_generation_1()
+	
+	# f1 = flow(nw_src = IPAddr('10.0.0.1'))
+	print len(f1.intersection), len(f1.coverd),len(f1.nodes_down)
+		
+	# intersection1 = set()
+	# for f in f1.nodes_up:
+	# 	b = f.find_intersection()
+		
+	# 	temp = set()
+	# 	for x in f.intersection:
+	# 		sign1 = f1.flow_comp(x, sign = 1 )
+	# 		sign2 = f1.flow_comp(x, sign = 2 )
+	# 		if sign1 == 1 or sign2 == 2:
+	# 			temp.add(x)
+		
+	# 	for x in temp:
+
+	# 		f.intersection.remove(x)	
+	# for f in f1.nodes_up:
+	# 	for x in f.intersection:
+	# 		intersection1.add(x)
+	# print len(intersection1)
+				
+	
+
+	# startTimeStamp3=time.time()
+	# intersection = f1.find_intersection_from_nodeup()
+	# endTimeStamp3=time.time()
+	# print " from_nodeup:"
+	# print (endTimeStamp3-startTimeStamp3)*1000, 'ms'
+	# print "intersection:", len(intersection), len(f1.coverd)
 
 
+	# startTimeStamp1=time.time()
+	# intersection = f1.find_intersection()
+	# endTimeStamp1=time.time()
+	# print "Intersection is shown:"
+	# print (endTimeStamp1-startTimeStamp1)*1000, 'ms'
+	# print "intersection:", len(intersection)
 
-
-
-	startTimeStamp1=time.time()
-	intersection = Conflict_Find(Conflict_name = "Intersection")
-	endTimeStamp1=time.time()
 	startTimeStamp2=time.time()
-	intersection_nomal = Conflict_Find(Conflict_name = "Intersection_nomal")
+	intersection = f1.find_intersection_nomal()
 	endTimeStamp2=time.time()
-
-	print "Intersection is shown:"
-	print (endTimeStamp1-startTimeStamp1)*1000, 'ms'
-	# print intersection.intersection_dict
 	print " The Nomal Intersection is shown:"
 	print (endTimeStamp2-startTimeStamp2)*1000, 'ms'
-	# print intersection_nomal.intersection_dict
+	print "intersection:", len(intersection)
 
+	# for x in intersection:
+	# 	sign1 = f1.flow_comp(x, sign = 1 )
+	# 	sign2 = f1.flow_comp(x, sign = 2 )
+	# 	if sign1 == 1 or sign2 == 2:
+	# 		temp.add(x)
+	
+	# intersection = 	intersection - temp
+	# print len(intersection)
 
-	# print flow1.actions
-	# print flow1.active_action
-
-	# # flow1_path = [2,5,8,10,11]
-	# flow1_path = [11,10,8,5,2]
-	# f1 = entry_action_attach_to_path(path = flow1_path)
-	# flow1.actions.append(entry_action_attach_to_path(path = flow1_path))
-	# flow1.calc_actions_graph()
-	# flow2 = flow(nw_src = IPAddr('10.0.0.4'),
-	# 			 nw_dst = IPAddr('10.0.0.5'))
-	# flow2_allow = set([8,9,10])
-
-	# flow2.actions.append(entry_action_flow_forbidden(allow_set = flow2_allow))
-	# flow2.calc_actions_graph()
-
-	# flow3 = flow(dl_vlan = 25)
-	# flow4 = flow(dl_vlan = 25, nw_src = IPAddr('10.0.0.4'),
-	# 			 nw_dst = IPAddr('10.0.0.5'))
-
-
-	# flow_generation(NUM = 500)
-	# startTimeStamp=time.time()
-	# flow2 = flow(nw_src = IPAddr('10.0.0.4'),
-	# 			 nw_dst = IPAddr('10.0.0.50'))
-	# flow2_allow = set([1])
-
-	# flow2.actions.append(entry_action_flow_forbidden(allow_set = flow2_allow))
-	# flow2.calc_actions_graph()
-
-	# print lvl_element, flow_name
-	# endTimeStamp=time.time()
-	# print (endTimeStamp-startTimeStamp)*1000, 'ms'
-	# print flow_name
-	# print end_leaf_nodes
-
-	# # print flow1.flow_graph
-	# print flow_root.nodes_down
 
 
 
